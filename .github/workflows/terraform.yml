@@ -2,7 +2,7 @@ name: Terraform Plan and Apply
 
 on:
   push:
-    branch: [main]
+    branches: [main]
     #paths:
     #  - 'main.tf'
   #workflow_dispatch:
@@ -21,13 +21,13 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
-          terraform_version: 'latest'
+          terraform_version: '1.1.7'
 
       - name: Terraform init
-        run: terraform init
+        run: terraform init -input=false
 
       - name: Terraform plan
         run: terraform plan
 
       - name: Terraform apply
-        run: terraform apply --auto-approve
+        run: terraform apply -auto-approve
