@@ -2,9 +2,11 @@ name: Terraform Plan and Apply
 
 on:
   push:
-    paths:
-      - 'main.tf'
-  workflow_dispatch:
+    branch:
+      - main
+    #paths:
+    #  - 'main.tf'
+  #workflow_dispatch:
 
 jobs:
   terraform:
