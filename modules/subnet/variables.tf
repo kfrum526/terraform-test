@@ -1,6 +1,11 @@
+variable "vpc_id" {
+  description = "VPC ID"
+  type = string
+}
+
 variable "sub_cidr_block" {
   description = "Subnet CIDR"
-  type = bool
+  type = string
 }
 
 variable "availability_zone" {
@@ -10,7 +15,7 @@ variable "availability_zone" {
 
 variable "map_public_ip_on_launch" {
   description = "Whether or not the subnet is private or public"
-  type = string
+  type = bool
 }
 
 variable "subnet_name" {
