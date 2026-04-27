@@ -12,3 +12,4 @@ variable "gateway_id" {
   description = "Gateway ID for the route"
   type = string
 }
+
