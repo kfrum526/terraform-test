@@ -13,23 +13,24 @@ resource "aws_route" "default_igw" {
 
 ## Calls module to make subnets; one public and one private
 module "Subnet_private" {
-  source = "./modules/subnet"
-  vpc_id = module.vpc.vpc_id
-  sub_cidr_block = "10.0.0.0/24"
-  availability_zone = "us-east-1a"
-  subnet_name = "Private Subnet"
-  map_public_ip_on_launch = false
-  route_table_id = module.vpc.default_route_table_id
-}
+  source                  = "./modules/subnet"
 
+  vpc_id                  = module.vpc.vpc_id
+  sub_cidr_block          = "10.0.0.0/24"
+  availability_zone       = "us-east-1a"
+  subnet_name             = "Private Subnet"
+  map_public_ip_on_launch = false
+  route_table_id          = module.vpc.default_route_table_id
+}
 module "Subnet_public" {
-  source = "./modules/subnet"
-  vpc_id = module.vpc.vpc_id
-  sub_cidr_block = "10.0.1.0/24"
-  availability_zone = "us-east-1b"
-  subnet_name = "Public Subnet"
+  source                  = "./modules/subnet"
+
+  vpc_id                  = module.vpc.vpc_id
+  sub_cidr_block          = "10.0.1.0/24"
+  availability_zone       = "us-east-1b"
+  subnet_name             = "Public Subnet"
   map_public_ip_on_launch = true
-  route_table_id = module.vpc.default_route_table_id
+  route_table_id          = module.vpc.default_route_table_id
 }
 
 ## Calls current caller identity to get account ID for KMS key policy
@@ -39,6 +40,7 @@ data "aws_caller_identity" "current" {}
 ## Calls module to make KMS key for encrypting application data
 module "kms_key" {
   source                  = "./modules/kms"
+
   description             = "Symmetric encryption key for application data"
   alias_name              = "alias/app-key"
   deletion_window_in_days = 20
@@ -55,9 +57,29 @@ data "aws_iam_policy_document" "administrator" {
 }
 
 ## Calls module to make IAM role for administrator
-module "aws_iam_role" {
-  source = "./modules/IAM"
-  role_name = "Administrator_Role"
-  policy_name = "Administrator_Policy"
+module "administrator_role" {
+  source          = "./modules/IAM"
+
+  role_name       = "Administrator_Role"
+  policy_name     = "Administrator_Policy"
   policy_document = data.aws_iam_policy_document.administrator.json
+}
+
+#######################################################################
+########################### EC2 Instances #############################
+#######################################################################
+
+module "ec2_instance" {
+  source               = "./modules/ec2-instance"
+
+  ami_id               = "ami-0c94855ba95c71c99" # Amazon Linux 2 AMI
+  instance_type        = "t3.micro"
+  availability_zone    = "us-east-1a"
+  iam_instance_profile = module.administrator_role.role_name
+  key_name             = "In_S3_Bucket"
+  security_groups      = [aws_security_group.ec2_sg.id]
+  user_data            = ""#file("${path.module}/user_data.sh")
+  volume_size          = 20
+  kms_key_id           = module.kms_key.key_id
+  instance_name        = "Terraform-Test"
 }
