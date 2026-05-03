@@ -1,0 +1,57 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "Enable IAM User Permissions",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::${account_id}:root"
+      },
+      "Action": "kms:*",
+      "Resource": "*"
+    }
+    %{ if length(key_admins) > 0 ~},
+    {
+      "Sid": "Allow administration of the key",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": ${jsonencode(key_admins)}
+      },
+      "Action": [
+        "kms:ReplicateKey",
+        "kms:Create*",
+        "kms:Describe*",
+        "kms:Enable*",
+        "kms:List*",
+        "kms:Put*",
+        "kms:Update*",
+        "kms:Revoke*",
+        "kms:Disable*",
+        "kms:Get*",
+        "kms:Delete*",
+        "kms:ScheduleKeyDeletion",
+        "kms:CancelKeyDeletion"
+      ],
+      "Resource": "*"
+    }
+    %{ endif ~}
+    %{ if length(key_users) > 0 ~},
+    {
+      "Sid": "Allow use of the key",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": ${jsonencode(key_users)}
+      },
+      "Action": [
+        "kms:DescribeKey",
+        "kms:Encrypt",
+        "kms:Decrypt",
+        "kms:ReEncrypt*",
+        "kms:GenerateDataKey",
+        "kms:GenerateDataKeyWithoutPlaintext"
+      ],
+      "Resource": "*"
+    }
+    %{ endif ~}
+  ]
+}

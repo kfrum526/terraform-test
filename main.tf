@@ -28,3 +28,14 @@ module "Subnet_public" {
   map_public_ip_on_launch = true
   route_table_id = module.vpc.default_route_table_id
 }
+
+data "aws_caller_identity" "current" {}
+
+module "kms_key" {
+  source                  = "./modules/kms"
+  description             = "Symmetric encryption key for application data"
+  alias_name              = "alias/app-encryption-key"
+  deletion_window_in_days = 20
+  key_admins              = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/Alice"]
+  key_users               = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/Bob"]
+}
