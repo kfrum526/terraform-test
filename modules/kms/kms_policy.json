@@ -10,7 +10,6 @@
       "Action": "kms:*",
       "Resource": "*"
     }
-    ,
     %{ if length(key_admins) > 0 ~},
     {
       "Sid": "Allow administration of the key",
