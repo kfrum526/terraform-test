@@ -8,8 +8,8 @@ variable "instance_type" {
   type        = string
 }
 
-variable "availability_zone" {
-  description = "Availability zone for the EC2 instance"
+variable "subnet_id" {
+  description = "Subnet ID to launch the EC2 instance in"
   type        = string
 }
 
