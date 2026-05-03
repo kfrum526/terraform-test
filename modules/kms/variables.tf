@@ -1,4 +1,4 @@
-variable "key_alias" {
+variable "alias_name" {
   description = "Alias for the KMS key"
   type        = string
   default     = "alias/my-key"

@@ -4,7 +4,7 @@ resource "aws_kms_key" "this" {
   description             = var.description
   deletion_window_in_days = var.deletion_window_in_days
   enable_key_rotation     = true
-  policy                  = templatefile("${path.module}/policies/kms_policy.json", {
+  policy                  = templatefile("${path.module}/kms_policy.json", {
     account_id = data.aws_caller_identity.current.account_id
     key_admins = var.key_admins
     key_users  = var.key_users
